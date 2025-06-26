@@ -1,0 +1,128 @@
+/* === Reset & basics === */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #121212;
+  color: #eee;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+}
+
+h1, h2 {
+  color: #f44336; /* bright red accent */
+  margin-bottom: 0.5rem;
+}
+
+header {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #333;
+  padding-bottom: 0.5rem;
+}
+
+#user-info {
+  font-size: 0.9rem;
+}
+
+.hidden {
+  display: none;
+}
+
+input[type="text"],
+input[type="password"],
+textarea {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid #333;
+  border-radius: 4px;
+  background: #1e1e1e;
+  color: #eee;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+textarea:focus {
+  outline: none;
+  border-color: #f44336;
+  background: #2a2a2a;
+}
+
+button {
+  background: #f44336;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+  font-size: 1rem;
+}
+
+button:hover {
+  background: #d32f2f;
+}
+
+main {
+  width: 100%;
+  max-width: 600px;
+}
+
+#post-creation textarea {
+  resize: vertical;
+}
+
+.post {
+  background: #1f1f1f;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  border: 1px solid #333;
+}
+
+.post .post-author {
+  font-weight: 700;
+  color: #f44336;
+  margin-bottom: 0.5rem;
+}
+
+.post .post-text {
+  margin-bottom: 0.5rem;
+}
+
+.post .post-actions {
+  font-size: 0.9rem;
+  color: #bbb;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.post .post-actions button {
+  background: transparent;
+  border: none;
+  color: #bbb;
+  cursor: pointer;
+  padding: 0;
+  font-weight: 600;
+  transition: color 0.3s;
+}
+
+.post .post-actions button:hover {
+  color: #f44336;
+}

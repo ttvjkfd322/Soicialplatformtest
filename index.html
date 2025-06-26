@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SocialSite MVP</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>SocialSite 🌸</h1>
+    <div id="user-info" class="hidden">
+      Logged in as <span id="username-display"></span>
+      <button id="logout-btn">Logout</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Signup / Login forms -->
+    <section id="auth-section">
+      <div id="signup-form">
+        <h2>Sign Up</h2>
+        <input type="text" id="signup-username" placeholder="Username" />
+        <input type="password" id="signup-password" placeholder="Password" />
+        <button id="signup-btn">Sign Up</button>
+      </div>
+
+      <div id="login-form" style="margin-top: 2rem;">
+        <h2>Login</h2>
+        <input type="text" id="login-username" placeholder="Username" />
+        <input type="password" id="login-password" placeholder="Password" />
+        <button id="login-btn">Login</button>
+      </div>
+    </section>
+
+    <!-- Post creation -->
+    <section id="post-creation" class="hidden">
+      <h2>Create Post</h2>
+      <textarea id="post-text" rows="3" placeholder="What's on your mind?"></textarea>
+      <button id="post-btn">Post</button>
+    </section>
+
+    <!-- Posts feed -->
+    <section id="feed-section" class="hidden">
+      <h2>Feed</h2>
+      <div id="posts-container">
+        <!-- Posts will appear here -->
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
