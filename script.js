@@ -3,7 +3,10 @@ let users = JSON.parse(localStorage.getItem('users')) || {};
 let currentUser = localStorage.getItem('currentUser') || null;
 let posts = JSON.parse(localStorage.getItem('posts')) || [];
 
-// ======= DOM Elements =======
+let isPlayerOne = false;
+let gameState = { players: [], turn: null };
+
+// ======= DOM References =======
 const signupUsernameInput = document.getElementById('signup-username');
 const signupPasswordInput = document.getElementById('signup-password');
 const signupBtn = document.getElementById('signup-btn');
@@ -19,22 +22,15 @@ const usernameDisplay = document.getElementById('username-display');
 const authSection = document.getElementById('auth-section');
 const postCreationSection = document.getElementById('post-creation');
 const feedSection = document.getElementById('feed-section');
-
 const postTextInput = document.getElementById('post-text');
 const postBtn = document.getElementById('post-btn');
-
 const postsContainer = document.getElementById('posts-container');
 
-// ======= Helper Functions =======
-
+// ======= Save & Render =======
 function saveData() {
   localStorage.setItem('users', JSON.stringify(users));
   localStorage.setItem('posts', JSON.stringify(posts));
-  if (currentUser) {
-    localStorage.setItem('currentUser', currentUser);
-  } else {
-    localStorage.removeItem('currentUser');
-  }
+  currentUser ? localStorage.setItem('currentUser', currentUser) : localStorage.removeItem('currentUser');
 }
 
 function renderUI() {
@@ -55,7 +51,6 @@ function renderUI() {
 
 function renderPosts() {
   postsContainer.innerHTML = '';
-
   const sortedPosts = posts.slice().sort((a, b) => b.timestamp - a.timestamp);
 
   if (sortedPosts.length === 0) {
@@ -85,12 +80,8 @@ function renderPosts() {
 
     likeBtn.onclick = () => {
       if (!currentUser) return;
-      const userIndex = post.likes.indexOf(currentUser);
-      if (userIndex === -1) {
-        post.likes.push(currentUser);
-      } else {
-        post.likes.splice(userIndex, 1);
-      }
+      const idx = post.likes.indexOf(currentUser);
+      idx === -1 ? post.likes.push(currentUser) : post.likes.splice(idx, 1);
       saveData();
       renderPosts();
       renderTrendingPosts();
@@ -104,9 +95,7 @@ function renderPosts() {
     followBtn.className = 'follow-btn';
     followBtn.textContent = '+ Follow';
 
-    actionsEl.appendChild(likeBtn);
-    actionsEl.appendChild(commentToggle);
-    actionsEl.appendChild(followBtn);
+    actionsEl.append(likeBtn, commentToggle, followBtn);
 
     const commentsSection = document.createElement('div');
     commentsSection.className = 'comments-section';
@@ -144,15 +133,8 @@ function renderPosts() {
       showNotification(following ? "👤 You're now following this user!" : "👋 Unfollowed user.");
     };
 
-    commentsSection.appendChild(commentsList);
-    commentsSection.appendChild(commentInput);
-    commentsSection.appendChild(commentSubmit);
-
-    postEl.appendChild(authorEl);
-    postEl.appendChild(textEl);
-    postEl.appendChild(actionsEl);
-    postEl.appendChild(commentsSection);
-
+    commentsSection.append(commentsList, commentInput, commentSubmit);
+    postEl.append(authorEl, textEl, actionsEl, commentsSection);
     postsContainer.appendChild(postEl);
   }
 }
@@ -160,7 +142,6 @@ function renderPosts() {
 function renderTrendingPosts() {
   const container = document.getElementById('trending-posts');
   if (!container) return;
-
   container.innerHTML = '';
 
   const sorted = posts.slice().sort((a, b) => b.likes.length - a.likes.length);
@@ -191,21 +172,11 @@ function showNotification(msg) {
 }
 
 // ======= Event Listeners =======
-
-// Signup
 signupBtn.onclick = () => {
   const username = signupUsernameInput.value.trim();
   const password = signupPasswordInput.value.trim();
-
-  if (!username || !password) {
-    alert('Please enter a username and password.');
-    return;
-  }
-
-  if (users[username]) {
-    alert('Username already exists. Please choose another.');
-    return;
-  }
+  if (!username || !password) return alert('Please enter a username and password.');
+  if (users[username]) return alert('Username already exists. Please choose another.');
 
   users[username] = { password };
   currentUser = username;
@@ -217,20 +188,11 @@ signupBtn.onclick = () => {
   renderTrendingPosts();
 };
 
-// Login
 loginBtn.onclick = () => {
   const username = loginUsernameInput.value.trim();
   const password = loginPasswordInput.value.trim();
-
-  if (!username || !password) {
-    alert('Please enter your username and password.');
-    return;
-  }
-
-  if (!users[username] || users[username].password !== password) {
-    alert('Invalid username or password.');
-    return;
-  }
+  if (!username || !password) return alert('Please enter your username and password.');
+  if (!users[username] || users[username].password !== password) return alert('Invalid username or password.');
 
   currentUser = username;
   saveData();
@@ -241,7 +203,6 @@ loginBtn.onclick = () => {
   renderTrendingPosts();
 };
 
-// Logout
 logoutBtn.onclick = () => {
   currentUser = null;
   saveData();
@@ -249,14 +210,9 @@ logoutBtn.onclick = () => {
   renderTrendingPosts();
 };
 
-// Post
 postBtn.onclick = () => {
   const text = postTextInput.value.trim();
-
-  if (!text) {
-    alert('Please write something before posting.');
-    return;
-  }
+  if (!text) return alert('Please write something before posting.');
 
   const newPost = {
     id: Date.now().toString(),
@@ -273,33 +229,22 @@ postBtn.onclick = () => {
   renderTrendingPosts();
 };
 
-// Tabs
 document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".tab-page").forEach(tab => tab.classList.remove("active"));
     document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-
     const tabId = "tab-" + btn.dataset.tab;
     document.getElementById(tabId).classList.add("active");
     btn.classList.add("active");
-
-    // If switching to trending, re-render it
-    if (tabId === "tab-trending") {
-      renderTrendingPosts();
-    }
+    if (tabId === "tab-trending") renderTrendingPosts();
   });
 });
 
-// AI Panels
+// ======= AI Panel =======
 function askAI() {
   const input = document.getElementById('ai-input').value.trim();
   const output = document.getElementById('ai-output');
-
-  if (!input) {
-    output.textContent = "Please enter a question.";
-    return;
-  }
-
+  if (!input) return output.textContent = "Please enter a question.";
   output.textContent = "🤖 Thinking... (AI connection coming soon)";
 }
 
@@ -308,20 +253,9 @@ function refreshInsights() {
   div.innerHTML = "<p>Re-analyzing site behavior... (AI engine placeholder)</p>";
 }
 
-// ======= Init =======
-renderUI();
-renderTrendingPosts();
-
-// === Multiplayer Mini Game ===
-let isPlayerOne = false;
-let gameState = {
-  players: [],
-  turn: null,
-};
-
-document.getElementById('join-game-btn').addEventListener('click', () => {
+// ======= Game Logic =======
+document.getElementById('join-game-btn')?.addEventListener('click', () => {
   const username = currentUser || 'Guest_' + Math.floor(Math.random() * 9999);
-
   if (!gameState.players.includes(username)) {
     gameState.players.push(username);
     if (gameState.players.length === 1) {
@@ -334,14 +268,14 @@ document.getElementById('join-game-btn').addEventListener('click', () => {
 
 function updateGameUI() {
   const status = document.getElementById('game-status');
+  if (!status) return;
   if (gameState.players.length === 1) {
     status.innerHTML = `Player 1 joined: <strong>${gameState.players[0]}</strong><br>Waiting for Player 2...`;
   } else if (gameState.players.length === 2) {
     status.innerHTML = `
       Player 1: <strong>${gameState.players[0]}</strong><br>
       Player 2: <strong>${gameState.players[1]}</strong><br><br>
-      <strong>It's ${gameState.turn}'s turn!</strong>
-      <br><br>
+      <strong>It's ${gameState.turn}'s turn!</strong><br><br>
       <button onclick="makeMove()">Make Move</button>
     `;
   }
@@ -354,36 +288,34 @@ function makeMove() {
   showNotification(`${gameState.turn}'s turn!`);
   updateGameUI();
 }
-// === Discord Bot Creator ===
-document.getElementById('run-bot-btn').addEventListener('click', () => {
+
+// ======= Discord Bot Language =======
+document.getElementById('run-bot-btn')?.addEventListener('click', () => {
   const code = document.getElementById('bot-code').value.trim();
   const output = document.getElementById('bot-output');
   output.textContent = '';
 
-  if (!code) {
-    output.textContent = 'Please write some bot code!';
-    return;
-  }
+  if (!code) return output.textContent = 'Please write some bot code!';
 
-  // Simple bot scripting language interpreter
   const lines = code.split('\n');
   for (const line of lines) {
-    const trimmed = line.trim();
+    const trimmed = line.trim().toLowerCase();
+    if (!trimmed) continue;
 
-    if (!trimmed) continue; // skip empty lines
-
-    const cmd = trimmed.toLowerCase();
-
-    if (cmd.startsWith('say ')) {
+    if (trimmed.startsWith('say ')) {
       output.textContent += `Bot says: ${trimmed.slice(4)}\n`;
-    } else if (cmd.startsWith('wait ')) {
+    } else if (trimmed.startsWith('wait ')) {
       output.textContent += `Bot waits for ${trimmed.slice(5)} seconds...\n`;
-    } else if (cmd.startsWith('send ')) {
+    } else if (trimmed.startsWith('send ')) {
       output.textContent += `Bot sends message: ${trimmed.slice(5)}\n`;
-    } else if (cmd.startsWith('help')) {
+    } else if (trimmed === 'help') {
       output.textContent += `Available commands:\n- say [message]\n- wait [seconds]\n- send [message]\n`;
     } else {
       output.textContent += `Unknown command: ${trimmed}\n`;
     }
   }
 });
+
+// ======= Init App =======
+renderUI();
+renderTrendingPosts();
