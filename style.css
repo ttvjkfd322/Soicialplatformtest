@@ -261,3 +261,26 @@ button:hover {
 #game-area button {
   margin-top: 1rem;
 }
+#bot-dashboard {
+  background: #1c1c1c;
+  border: 1px solid #333;
+  padding: 1rem;
+  border-radius: 8px;
+  font-family: monospace;
+}
+
+#bot-dashboard button {
+  background: #f44336;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+  font-size: 1rem;
+}
+
+#bot-dashboard button:hover {
+  background: #d32f2f;
+}
