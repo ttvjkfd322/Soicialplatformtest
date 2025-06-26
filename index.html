@@ -48,6 +48,79 @@
       </div>
     </section>
   </main>
+<section id="vlog-recorder">
+  <h2>Record Your Vlog</h2>
+  <video id="preview" autoplay muted playsinline style="width: 100%; max-width: 400px; background: black;"></video>
+  <div style="margin-top: 1rem;">
+    <button id="start-record">Start Recording</button>
+    <button id="stop-record" disabled>Stop Recording</button>
+  </div>
+  <h3>Playback</h3>
+  <video id="playback" controls style="width: 100%; max-width: 400px; background: black;"></video>
+  <a id="download-link" style="display: none; margin-top: 0.5rem;">Download Video</a>
+</section>
+
+<script>
+  const preview = document.getElementById('preview');
+  const playback = document.getElementById('playback');
+  const startBtn = document.getElementById('start-record');
+  const stopBtn = document.getElementById('stop-record');
+  const downloadLink = document.getElementById('download-link');
+
+  let mediaRecorder;
+  let recordedChunks = [];
+
+  // Access webcam and show preview
+  async function initCamera() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      preview.srcObject = stream;
+
+      mediaRecorder = new MediaRecorder(stream);
+
+      mediaRecorder.ondataavailable = e => {
+        if (e.data.size > 0) recordedChunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        recordedChunks = [];
+
+        // Show playback
+        playback.src = URL.createObjectURL(blob);
+
+        // Show download link
+        downloadLink.href = playback.src;
+        downloadLink.download = 'vlog.webm';
+        downloadLink.style.display = 'inline-block';
+        downloadLink.textContent = 'Download your video';
+      };
+
+      startBtn.disabled = false;
+    } catch (err) {
+      alert('Could not access your camera and microphone: ' + err.message);
+      startBtn.disabled = true;
+      stopBtn.disabled = true;
+    }
+  }
+
+  startBtn.onclick = () => {
+    recordedChunks = [];
+    mediaRecorder.start();
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+    downloadLink.style.display = 'none';
+    playback.src = '';
+  };
+
+  stopBtn.onclick = () => {
+    mediaRecorder.stop();
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+  };
+
+  initCamera();
+</script>
 
   <script src="script.js"></script>
 </body>
