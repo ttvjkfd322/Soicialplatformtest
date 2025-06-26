@@ -1,199 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
-  <nav id="main-nav">
-  <button class="tab-btn" data-tab="home">🏠 Home</button>
-  <button class="tab-btn" data-tab="trending">🔥 Trending</button>
-  <button class="tab-btn" data-tab="explore">🌐 Explore</button>
-  <button class="tab-btn" data-tab="rules">📜 Rules</button>
-  <button class="tab-btn" data-tab="livestreams">🎥 Livestreams</button>
-</nav>
-
-<!-- Section placeholders -->
-<section id="tab-home" class="tab-page active">
-  <!-- Your existing homepage content goes here -->
-</section>
-
-<section id="tab-trending" class="tab-page">
-  <h2>🔥 Trending Posts</h2>
-  <div id="trending-posts"></div>
-</section>
-
-<section id="tab-explore" class="tab-page">
-  <h2>🌐 Explore New Content</h2>
-  <p>Discover random posts and users!</p>
-</section>
-
-<section id="tab-rules" class="tab-page">
-  <h2>📜 Gtok Site Rules</h2>
-  <ul>
-    <li>Be kind and respectful to others</li>
-    <li>No inappropriate or hateful content</li>
-    <li>Keep posts relevant and fun</li>
-    <li>No spamming or bot behavior</li>
-    <li>Report issues to moderators</li>
-  </ul>
-</section>
-
-<section id="tab-livestreams" class="tab-page">
-  <h2>🎥 Upcoming Livestreams</h2>
-  <p>Feature coming soon — schedule and join live sessions!</p>
-</section>
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SocialSite MVP</title>
+  <title>Gtok 🌸 Social Site</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <h1>SocialSite 🌸</h1>
-    <div id="user-info" class="hidden">
-      Logged in as <span id="username-display"></span>
-      <button id="logout-btn">Logout</button>
-    </div>
-  </header>
 
-  <main>
-    <!-- Signup / Login forms -->
-    <section id="auth-section">
-      <div id="signup-form">
-        <h2>Sign Up</h2>
-        <input type="text" id="signup-username" placeholder="Username" />
-        <input type="password" id="signup-password" placeholder="Password" />
-        <button id="signup-btn">Sign Up</button>
+  <!-- === Navigation Tabs === -->
+  <nav id="main-nav">
+    <button class="tab-btn" data-tab="home">🏠 Home</button>
+    <button class="tab-btn" data-tab="trending">🔥 Trending</button>
+    <button class="tab-btn" data-tab="explore">🌐 Explore</button>
+    <button class="tab-btn" data-tab="rules">📜 Rules</button>
+    <button class="tab-btn" data-tab="livestreams">🎥 Livestreams</button>
+  </nav>
+
+  <!-- === HOME TAB === -->
+  <section id="tab-home" class="tab-page active">
+    <header>
+      <h1>SocialSite 🌸</h1>
+      <div id="user-info" class="hidden">
+        Logged in as <span id="username-display"></span>
+        <button id="logout-btn">Logout</button>
       </div>
+    </header>
 
-      <div id="login-form" style="margin-top: 2rem;">
-        <h2>Login</h2>
-        <input type="text" id="login-username" placeholder="Username" />
-        <input type="password" id="login-password" placeholder="Password" />
-        <button id="login-btn">Login</button>
-      </div>
-    </section>
-    
-<section id="improve-panel" style="margin-top: 3rem;">
-  <h2>🧠 Website Improvement Engine</h2>
-  <div id="ai-insights">
-    <p>Analyzing site usage...</p>
-  </div>
-  <button onclick="refreshInsights()">🔄 Refresh Insights</button>
-</section>
+    <main>
+      <!-- === Login / Signup === -->
+      <section id="auth-section">
+        <div id="signup-form">
+          <h2>Sign Up</h2>
+          <input type="text" id="signup-username" placeholder="Username" />
+          <input type="password" id="signup-password" placeholder="Password" />
+          <button id="signup-btn">Sign Up</button>
+        </div>
 
-<section id="ai-suggestions" style="margin-top: 3rem;">
-  <h2>🤖 AI-Powered Suggestions</h2>
-  <textarea id="ai-input" placeholder="Ask how to improve your site..." rows="3" style="width: 100%;"></textarea>
-  <button onclick="askAI()">Ask AI</button>
-  <pre id="ai-output" style="background: #1e1e1e; color: #eee; padding: 1rem; margin-top: 1rem; border-radius: 6px;"></pre>
-</section>
+        <div id="login-form" style="margin-top: 2rem;">
+          <h2>Login</h2>
+          <input type="text" id="login-username" placeholder="Username" />
+          <input type="password" id="login-password" placeholder="Password" />
+          <button id="login-btn">Login</button>
+        </div>
+      </section>
 
-    <!-- Post creation -->
-    <section id="post-creation" class="hidden">
-      <h2>Create Post</h2>
-      <textarea id="post-text" rows="3" placeholder="What's on your mind?"></textarea>
-      <button id="post-btn">Post</button>
-    </section>
+      <!-- === AI Suggestions Section === -->
+      <section id="improve-panel" style="margin-top: 3rem;">
+        <h2>🧠 Website Improvement Engine</h2>
+        <div id="ai-insights">
+          <p>Analyzing site usage...</p>
+        </div>
+        <button onclick="refreshInsights()">🔄 Refresh Insights</button>
+      </section>
 
-    <!-- Posts feed -->
-    <section id="feed-section" class="hidden">
-      <h2>Feed</h2>
-      <div id="posts-container">
-        <!-- Posts will appear here -->
-      </div>
-      <div class="post">
-  <h3>@username</h3>
-  <p>This is an example post!</p>
-  
-  <div class="post-actions">
-    <button class="like-btn">❤️ <span class="like-count">0</span></button>
-    <button class="comment-toggle">💬 Comments</button>
-    <button class="follow-btn">+ Follow</button>
-  </div>
+      <section id="ai-suggestions" style="margin-top: 3rem;">
+        <h2>🤖 AI-Powered Suggestions</h2>
+        <textarea id="ai-input" placeholder="Ask how to improve your site..." rows="3" style="width: 100%;"></textarea>
+        <button onclick="askAI()">Ask AI</button>
+        <pre id="ai-output" style="background: #1e1e1e; color: #eee; padding: 1rem; margin-top: 1rem; border-radius: 6px;"></pre>
+      </section>
 
-  <div class="comments-section" style="display: none;">
-    <div class="comments-list"></div>
-    <input type="text" class="comment-input" placeholder="Write a comment..." />
-    <button class="comment-submit">Post</button>
-  </div>
-</div>
+      <!-- === Post Creation === -->
+      <section id="post-creation" class="hidden">
+        <h2>Create Post</h2>
+        <textarea id="post-text" rows="3" placeholder="What's on your mind?"></textarea>
+        <button id="post-btn">Post</button>
+      </section>
 
-<div id="notification-bar"></div>
-    </section>
-  </main>
-<section id="vlog-recorder">
-  <h2>Record Your Vlog</h2>
-  <video id="preview" autoplay muted playsinline style="width: 100%; max-width: 400px; background: black;"></video>
-  <div style="margin-top: 1rem;">
-    <button id="start-record">Start Recording</button>
-    <button id="stop-record" disabled>Stop Recording</button>
-  </div>
-  <h3>Playback</h3>
-  <video id="playback" controls style="width: 100%; max-width: 400px; background: black;"></video>
-  <a id="download-link" style="display: none; margin-top: 0.5rem;">Download Video</a>
-</section>
+      <!-- === Posts Feed === -->
+      <section id="feed-section" class="hidden">
+        <h2>Feed</h2>
+        <div id="posts-container">
+          <!-- Posts will appear here -->
+          <div class="post">
+            <h3>@username</h3>
+            <p>This is an example post!</p>
 
-<script>
-  const preview = document.getElementById('preview');
-  const playback = document.getElementById('playback');
-  const startBtn = document.getElementById('start-record');
-  const stopBtn = document.getElementById('stop-record');
-  const downloadLink = document.getElementById('download-link');
+            <div class="post-actions">
+              <button class="like-btn">❤️ <span class="like-count">0</span></button>
+              <button class="comment-toggle">💬 Comments</button>
+              <button class="follow-btn">+ Follow</button>
+            </div>
 
-  let mediaRecorder;
-  let recordedChunks = [];
+            <div class="comments-section" style="display: none;">
+              <div class="comments-list"></div>
+              <input type="text" class="comment-input" placeholder="Write a comment..." />
+              <button class="comment-submit">Post</button>
+            </div>
+          </div>
+        </div>
+        <div id="notification-bar"></div>
+      </section>
 
-  // Access webcam and show preview
-  async function initCamera() {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      preview.srcObject = stream;
+      <!-- === Vlog Recorder === -->
+      <section id="vlog-recorder">
+        <h2>🎥 Record Your Vlog</h2>
+        <video id="preview" autoplay muted playsinline style="width: 100%; max-width: 400px; background: black;"></video>
+        <div style="margin-top: 1rem;">
+          <button id="start-record">Start Recording</button>
+          <button id="stop-record" disabled>Stop Recording</button>
+        </div>
+        <h3>Playback</h3>
+        <video id="playback" controls style="width: 100%; max-width: 400px; background: black;"></video>
+        <a id="download-link" style="display: none; margin-top: 0.5rem;">Download Video</a>
+      </section>
+    </main>
+  </section>
 
-      mediaRecorder = new MediaRecorder(stream);
+  <!-- === TRENDING TAB === -->
+  <section id="tab-trending" class="tab-page">
+    <h2>🔥 Trending Posts</h2>
+    <div id="trending-posts"></div>
+  </section>
 
-      mediaRecorder.ondataavailable = e => {
-        if (e.data.size > 0) recordedChunks.push(e.data);
-      };
+  <!-- === EXPLORE TAB === -->
+  <section id="tab-explore" class="tab-page">
+    <h2>🌐 Explore New Content</h2>
+    <p>Discover random posts and users!</p>
+  </section>
 
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(recordedChunks, { type: 'video/webm' });
-        recordedChunks = [];
+  <!-- === RULES TAB === -->
+  <section id="tab-rules" class="tab-page">
+    <h2>📜 Gtok Site Rules</h2>
+    <ul>
+      <li>Be kind and respectful to others</li>
+      <li>No inappropriate or hateful content</li>
+      <li>Keep posts relevant and fun</li>
+      <li>No spamming or bot behavior</li>
+      <li>Report issues to moderators</li>
+    </ul>
+  </section>
 
-        // Show playback
-        playback.src = URL.createObjectURL(blob);
+  <!-- === LIVESTREAMS TAB === -->
+  <section id="tab-livestreams" class="tab-page">
+    <h2>🎥 Upcoming Livestreams</h2>
+    <p>Feature coming soon — schedule and join live sessions!</p>
+  </section>
 
-        // Show download link
-        downloadLink.href = playback.src;
-        downloadLink.download = 'vlog.webm';
-        downloadLink.style.display = 'inline-block';
-        downloadLink.textContent = 'Download your video';
-      };
+  <!-- === Vlog Recorder Script === -->
+  <script>
+    const preview = document.getElementById('preview');
+    const playback = document.getElementById('playback');
+    const startBtn = document.getElementById('start-record');
+    const stopBtn = document.getElementById('stop-record');
+    const downloadLink = document.getElementById('download-link');
 
-      startBtn.disabled = false;
-    } catch (err) {
-      alert('Could not access your camera and microphone: ' + err.message);
-      startBtn.disabled = true;
-      stopBtn.disabled = true;
+    let mediaRecorder;
+    let recordedChunks = [];
+
+    async function initCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        preview.srcObject = stream;
+
+        mediaRecorder = new MediaRecorder(stream);
+
+        mediaRecorder.ondataavailable = e => {
+          if (e.data.size > 0) recordedChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(recordedChunks, { type: 'video/webm' });
+          recordedChunks = [];
+
+          playback.src = URL.createObjectURL(blob);
+          downloadLink.href = playback.src;
+          downloadLink.download = 'vlog.webm';
+          downloadLink.style.display = 'inline-block';
+          downloadLink.textContent = 'Download your video';
+        };
+
+        startBtn.disabled = false;
+      } catch (err) {
+        alert('Could not access your camera and microphone: ' + err.message);
+        startBtn.disabled = true;
+        stopBtn.disabled = true;
+      }
     }
-  }
 
-  startBtn.onclick = () => {
-    recordedChunks = [];
-    mediaRecorder.start();
-    startBtn.disabled = true;
-    stopBtn.disabled = false;
-    downloadLink.style.display = 'none';
-    playback.src = '';
-  };
+    startBtn.onclick = () => {
+      recordedChunks = [];
+      mediaRecorder.start();
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+      downloadLink.style.display = 'none';
+      playback.src = '';
+    };
 
-  stopBtn.onclick = () => {
-    mediaRecorder.stop();
-    startBtn.disabled = false;
-    stopBtn.disabled = true;
-  };
+    stopBtn.onclick = () => {
+      mediaRecorder.stop();
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+    };
 
-  initCamera();
-</script>
+    initCamera();
+  </script>
 
+  <!-- === Main JS Logic === -->
   <script src="script.js"></script>
 </body>
 </html>
