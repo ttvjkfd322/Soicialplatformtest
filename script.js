@@ -354,3 +354,36 @@ function makeMove() {
   showNotification(`${gameState.turn}'s turn!`);
   updateGameUI();
 }
+// === Discord Bot Creator ===
+document.getElementById('run-bot-btn').addEventListener('click', () => {
+  const code = document.getElementById('bot-code').value.trim();
+  const output = document.getElementById('bot-output');
+  output.textContent = '';
+
+  if (!code) {
+    output.textContent = 'Please write some bot code!';
+    return;
+  }
+
+  // Simple bot scripting language interpreter
+  const lines = code.split('\n');
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    if (!trimmed) continue; // skip empty lines
+
+    const cmd = trimmed.toLowerCase();
+
+    if (cmd.startsWith('say ')) {
+      output.textContent += `Bot says: ${trimmed.slice(4)}\n`;
+    } else if (cmd.startsWith('wait ')) {
+      output.textContent += `Bot waits for ${trimmed.slice(5)} seconds...\n`;
+    } else if (cmd.startsWith('send ')) {
+      output.textContent += `Bot sends message: ${trimmed.slice(5)}\n`;
+    } else if (cmd.startsWith('help')) {
+      output.textContent += `Available commands:\n- say [message]\n- wait [seconds]\n- send [message]\n`;
+    } else {
+      output.textContent += `Unknown command: ${trimmed}\n`;
+    }
+  }
+});
