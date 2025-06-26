@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#121212" />
   <title>Gtok 🌸 Social Site</title>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -10,7 +11,7 @@
 
   <!-- === Navigation Tabs === -->
   <nav id="main-nav">
-    <button class="tab-btn" data-tab="home">🏠 Home</button>
+    <button class="tab-btn active" data-tab="home">🏠 Home</button>
     <button class="tab-btn" data-tab="trending">🔥 Trending</button>
     <button class="tab-btn" data-tab="explore">🌐 Explore</button>
     <button class="tab-btn" data-tab="rules">📜 Rules</button>
@@ -21,7 +22,7 @@
   <!-- === HOME TAB === -->
   <section id="tab-home" class="tab-page active">
     <header>
-      <h1>SocialSite 🌸</h1>
+      <h1>Gtok 🌸 Social Site</h1>
       <div id="user-info" class="hidden">
         Logged in as <span id="username-display"></span>
         <button id="logout-btn">Logout</button>
@@ -72,29 +73,12 @@
       <!-- === Posts Feed === -->
       <section id="feed-section" class="hidden">
         <h2>Feed</h2>
-        <div id="posts-container">
-          <div class="post">
-            <h3>@username</h3>
-            <p>This is an example post!</p>
-
-            <div class="post-actions">
-              <button class="like-btn">❤️ <span class="like-count">0</span></button>
-              <button class="comment-toggle">💬 Comments</button>
-              <button class="follow-btn">+ Follow</button>
-            </div>
-
-            <div class="comments-section" style="display: none;">
-              <div class="comments-list"></div>
-              <input type="text" class="comment-input" placeholder="Write a comment..." />
-              <button class="comment-submit">Post</button>
-            </div>
-          </div>
-        </div>
+        <div id="posts-container"></div>
         <div id="notification-bar"></div>
       </section>
 
       <!-- === Vlog Recorder === -->
-      <section id="vlog-recorder">
+      <section id="vlog-recorder" style="margin-top: 3rem;">
         <h2>🎥 Record Your Vlog</h2>
         <video id="preview" autoplay muted playsinline style="width: 100%; max-width: 400px; background: black;"></video>
         <div style="margin-top: 1rem;">
@@ -135,7 +119,6 @@
   <!-- === PLAY TAB === -->
   <section id="tab-play" class="tab-page">
     <h2>🎮 Mini Multiplayer Game</h2>
-    <p>Connect and play with others!</p>
     <div id="game-area">
       <p>Waiting for another player...</p>
       <button id="join-game-btn">Join Game</button>
@@ -216,7 +199,7 @@
     initCamera();
   </script>
 
-  <!-- === Main JavaScript File === -->
+  <!-- === Main JS App === -->
   <script src="script.js"></script>
 </body>
 </html>
