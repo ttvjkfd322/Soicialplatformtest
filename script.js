@@ -80,8 +80,13 @@ function renderPosts() {
 
     likeBtn.onclick = () => {
       if (!currentUser) return;
-      const idx = post.likes.indexOf(currentUser);
-      idx === -1 ? post.likes.push(currentUser) : post.likes.splice(idx, 1);
+      const postIndex = posts.findIndex(p => p.id === post.id);
+      const userIdx = posts[postIndex].likes.indexOf(currentUser);
+      if (userIdx === -1) {
+        posts[postIndex].likes.push(currentUser);
+      } else {
+        posts[postIndex].likes.splice(userIdx, 1);
+      }
       saveData();
       renderPosts();
       renderTrendingPosts();
@@ -93,7 +98,27 @@ function renderPosts() {
 
     const followBtn = document.createElement('button');
     followBtn.className = 'follow-btn';
-    followBtn.textContent = '+ Follow';
+
+    const isFollowing = currentUser && users[currentUser]?.following?.includes(post.author);
+    followBtn.textContent = isFollowing ? 'Following ✓' : '+ Follow';
+
+    followBtn.onclick = () => {
+      if (!currentUser || currentUser === post.author) return;
+      const following = users[currentUser].following || [];
+
+      const idx = following.indexOf(post.author);
+      if (idx === -1) {
+        following.push(post.author);
+        followBtn.textContent = 'Following ✓';
+        showNotification(`👤 You're now following @${post.author}`);
+      } else {
+        following.splice(idx, 1);
+        followBtn.textContent = '+ Follow';
+        showNotification(`👋 Unfollowed @${post.author}`);
+      }
+      users[currentUser].following = following;
+      saveData();
+    };
 
     actionsEl.append(likeBtn, commentToggle, followBtn);
 
@@ -103,6 +128,12 @@ function renderPosts() {
 
     const commentsList = document.createElement('div');
     commentsList.className = 'comments-list';
+
+    (post.comments || []).forEach(c => {
+      const comment = document.createElement('p');
+      comment.textContent = `${c.author}: ${c.text}`;
+      commentsList.appendChild(comment);
+    });
 
     const commentInput = document.createElement('input');
     commentInput.className = 'comment-input';
@@ -118,19 +149,16 @@ function renderPosts() {
 
     commentSubmit.onclick = () => {
       const text = commentInput.value.trim();
-      if (text) {
-        const comment = document.createElement('p');
-        comment.textContent = `You: ${text}`;
-        commentsList.appendChild(comment);
-        commentInput.value = '';
+      if (text && currentUser) {
+        const comment = { author: currentUser, text };
+        const postIndex = posts.findIndex(p => p.id === post.id);
+        posts[postIndex].comments = posts[postIndex].comments || [];
+        posts[postIndex].comments.push(comment);
+        saveData();
+        renderPosts();
+        renderTrendingPosts();
         showNotification("💬 Comment posted!");
       }
-    };
-
-    followBtn.onclick = () => {
-      const following = followBtn.textContent === "+ Follow";
-      followBtn.textContent = following ? "Following ✓" : "+ Follow";
-      showNotification(following ? "👤 You're now following this user!" : "👋 Unfollowed user.");
     };
 
     commentsSection.append(commentsList, commentInput, commentSubmit);
@@ -178,7 +206,7 @@ signupBtn.onclick = () => {
   if (!username || !password) return alert('Please enter a username and password.');
   if (users[username]) return alert('Username already exists. Please choose another.');
 
-  users[username] = { password };
+  users[username] = { password: btoa(password), following: [] };
   currentUser = username;
   saveData();
   signupUsernameInput.value = '';
@@ -192,7 +220,7 @@ loginBtn.onclick = () => {
   const username = loginUsernameInput.value.trim();
   const password = loginPasswordInput.value.trim();
   if (!username || !password) return alert('Please enter your username and password.');
-  if (!users[username] || users[username].password !== password) return alert('Invalid username or password.');
+  if (!users[username] || users[username].password !== btoa(password)) return alert('Invalid username or password.');
 
   currentUser = username;
   saveData();
@@ -220,6 +248,7 @@ postBtn.onclick = () => {
     text,
     timestamp: Date.now(),
     likes: [],
+    comments: []
   };
 
   posts.push(newPost);
@@ -245,7 +274,7 @@ function askAI() {
   const input = document.getElementById('ai-input').value.trim();
   const output = document.getElementById('ai-output');
   if (!input) return output.textContent = "Please enter a question.";
-  output.textContent = "🤖 Thinking... (AI connection coming soon)";
+  output.innerHTML = `<p>🤖 AI thinking...</p><p><em>(Feature coming soon. Input captured: "${input}")</em></p>`;
 }
 
 function refreshInsights() {
@@ -256,14 +285,18 @@ function refreshInsights() {
 // ======= Game Logic =======
 document.getElementById('join-game-btn')?.addEventListener('click', () => {
   const username = currentUser || 'Guest_' + Math.floor(Math.random() * 9999);
-  if (!gameState.players.includes(username)) {
-    gameState.players.push(username);
-    if (gameState.players.length === 1) {
-      isPlayerOne = true;
-      gameState.turn = username;
-    }
-    updateGameUI();
+  if (gameState.players.includes(username)) return;
+  if (gameState.players.length >= 2) {
+    showNotification("❌ Game is full!");
+    return;
   }
+
+  gameState.players.push(username);
+  if (gameState.players.length === 1) {
+    isPlayerOne = true;
+    gameState.turn = username;
+  }
+  updateGameUI();
 });
 
 function updateGameUI() {
