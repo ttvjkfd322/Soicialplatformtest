@@ -250,3 +250,14 @@ button:hover {
   font-weight: 600;
   margin-top: 0.5rem;
 }
+#game-area {
+  padding: 1rem;
+  background: #1e1e1e;
+  border-radius: 8px;
+  border: 1px solid #333;
+  text-align: center;
+}
+
+#game-area button {
+  margin-top: 1rem;
+}
