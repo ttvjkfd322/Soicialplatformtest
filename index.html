@@ -27,15 +27,7 @@
         <button id="logout-btn">Logout</button>
       </div>
     </header>
-<section id="tab-play" class="tab-page">
-  <h2>🎮 Mini Multiplayer Game</h2>
-  <p>Connect and play with others!</p>
-  <div id="game-area">
-    <p>Waiting for another player...</p>
-    <button id="join-game-btn">Join Game</button>
-    <div id="game-status" style="margin-top: 1rem;"></div>
-  </div>
-</section>
+
     <main>
       <!-- === Login / Signup === -->
       <section id="auth-section">
@@ -81,7 +73,6 @@
       <section id="feed-section" class="hidden">
         <h2>Feed</h2>
         <div id="posts-container">
-          <!-- Posts will appear here -->
           <div class="post">
             <h3>@username</h3>
             <p>This is an example post!</p>
@@ -141,10 +132,29 @@
     </ul>
   </section>
 
+  <!-- === PLAY TAB === -->
+  <section id="tab-play" class="tab-page">
+    <h2>🎮 Mini Multiplayer Game</h2>
+    <p>Connect and play with others!</p>
+    <div id="game-area">
+      <p>Waiting for another player...</p>
+      <button id="join-game-btn">Join Game</button>
+      <div id="game-status" style="margin-top: 1rem;"></div>
+    </div>
+  </section>
+
   <!-- === LIVESTREAMS TAB === -->
   <section id="tab-livestreams" class="tab-page">
     <h2>🎥 Upcoming Livestreams</h2>
     <p>Feature coming soon — schedule and join live sessions!</p>
+  </section>
+
+  <!-- === BOT CREATOR DASHBOARD === -->
+  <section id="bot-dashboard" style="margin-top: 3rem; border-top: 1px solid #444; padding-top: 1rem; max-width: 600px; width: 100%;">
+    <h2>🤖 Discord Bot Creator</h2>
+    <textarea id="bot-code" placeholder="Write your bot script here..." rows="8" style="width: 100%; background: #1e1e1e; color: #eee; border-radius: 6px; border: 1px solid #333; padding: 1rem; font-family: monospace;"></textarea>
+    <button id="run-bot-btn" style="margin-top: 1rem;">Run Bot Script</button>
+    <pre id="bot-output" style="background: #121212; color: #f44336; margin-top: 1rem; padding: 1rem; border-radius: 6px; height: 150px; overflow-y: auto;"></pre>
   </section>
 
   <!-- === Vlog Recorder Script === -->
@@ -206,14 +216,7 @@
     initCamera();
   </script>
 
-  <!-- === Main JS Logic === -->
+  <!-- === Main JavaScript File === -->
   <script src="script.js"></script>
-  
-  <section id="bot-dashboard" style="margin-top: 3rem; border-top: 1px solid #444; padding-top: 1rem; max-width: 600px; width: 100%;">
-  <h2>🤖 Discord Bot Creator</h2>
-  <textarea id="bot-code" placeholder="Write your bot script here..." rows="8" style="width: 100%; background: #1e1e1e; color: #eee; border-radius: 6px; border: 1px solid #333; padding: 1rem; font-family: monospace;"></textarea>
-  <button id="run-bot-btn" style="margin-top: 1rem;">Run Bot Script</button>
-  <pre id="bot-output" style="background: #121212; color: #f44336; margin-top: 1rem; padding: 1rem; border-radius: 6px; height: 150px; overflow-y: auto;"></pre>
-</section>
 </body>
 </html>
