@@ -104,7 +104,54 @@ main {
 .post .post-text {
   margin-bottom: 0.5rem;
 }
+.post-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 0.5rem;
+}
 
+.like-btn, .comment-toggle, .follow-btn {
+  background: #2c2c2c;
+  color: #f2f2f2;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.like-btn.liked {
+  background: crimson;
+}
+
+.comments-section {
+  margin-top: 1rem;
+  border-top: 1px solid #444;
+  padding-top: 0.5rem;
+}
+
+.comment-input {
+  width: 100%;
+  padding: 6px;
+  margin-top: 0.5rem;
+  background: #1e1e1e;
+  border: 1px solid #555;
+  color: white;
+  border-radius: 4px;
+}
+
+#notification-bar {
+  position: fixed;
+  top: 0;
+  right: 1rem;
+  background: #333;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 2px 8px #000;
+  z-index: 999;
+  display: none;
+}
 .post .post-actions {
   font-size: 0.9rem;
   color: #bbb;
