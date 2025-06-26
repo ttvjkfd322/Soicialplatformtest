@@ -34,7 +34,7 @@ function saveData() {
 }
 
 function renderUI() {
-  if (currentUser) {
+  if (currentUser && users[currentUser]) {
     authSection.classList.add('hidden');
     postCreationSection.classList.remove('hidden');
     feedSection.classList.remove('hidden');
@@ -79,13 +79,14 @@ function renderPosts() {
     likeBtn.disabled = !currentUser;
 
     likeBtn.onclick = () => {
-      if (!currentUser) return;
+      if (!currentUser || !users[currentUser]) return;
       const postIndex = posts.findIndex(p => p.id === post.id);
-      const userIdx = posts[postIndex].likes.indexOf(currentUser);
+      const likes = posts[postIndex].likes;
+      const userIdx = likes.indexOf(currentUser);
       if (userIdx === -1) {
-        posts[postIndex].likes.push(currentUser);
+        likes.push(currentUser);
       } else {
-        posts[postIndex].likes.splice(userIdx, 1);
+        likes.splice(userIdx, 1);
       }
       saveData();
       renderPosts();
@@ -103,9 +104,9 @@ function renderPosts() {
     followBtn.textContent = isFollowing ? 'Following ✓' : '+ Follow';
 
     followBtn.onclick = () => {
-      if (!currentUser || currentUser === post.author) return;
-      const following = users[currentUser].following || [];
+      if (!currentUser || !users[currentUser] || currentUser === post.author) return;
 
+      const following = users[currentUser].following || [];
       const idx = following.indexOf(post.author);
       if (idx === -1) {
         following.push(post.author);
@@ -116,6 +117,7 @@ function renderPosts() {
         followBtn.textContent = '+ Follow';
         showNotification(`👋 Unfollowed @${post.author}`);
       }
+
       users[currentUser].following = following;
       saveData();
     };
@@ -149,16 +151,16 @@ function renderPosts() {
 
     commentSubmit.onclick = () => {
       const text = commentInput.value.trim();
-      if (text && currentUser) {
-        const comment = { author: currentUser, text };
-        const postIndex = posts.findIndex(p => p.id === post.id);
-        posts[postIndex].comments = posts[postIndex].comments || [];
-        posts[postIndex].comments.push(comment);
-        saveData();
-        renderPosts();
-        renderTrendingPosts();
-        showNotification("💬 Comment posted!");
-      }
+      if (!text || !currentUser || !users[currentUser]) return;
+
+      const comment = { author: currentUser, text };
+      const postIndex = posts.findIndex(p => p.id === post.id);
+      posts[postIndex].comments = posts[postIndex].comments || [];
+      posts[postIndex].comments.push(comment);
+      saveData();
+      renderPosts();
+      renderTrendingPosts();
+      showNotification("💬 Comment posted!");
     };
 
     commentsSection.append(commentsList, commentInput, commentSubmit);
@@ -204,14 +206,14 @@ signupBtn.onclick = () => {
   const username = signupUsernameInput.value.trim();
   const password = signupPasswordInput.value.trim();
   if (!username || !password) return alert('Please enter a username and password.');
-  if (users[username]) return alert('Username already exists. Please choose another.');
+  if (users[username]) return alert('Username already exists.');
 
   users[username] = { password: btoa(password), following: [] };
   currentUser = username;
   saveData();
   signupUsernameInput.value = '';
   signupPasswordInput.value = '';
-  alert(`Welcome, ${username}! You are now signed up and logged in.`);
+  alert(`Welcome, ${username}!`);
   renderUI();
   renderTrendingPosts();
 };
@@ -241,6 +243,7 @@ logoutBtn.onclick = () => {
 postBtn.onclick = () => {
   const text = postTextInput.value.trim();
   if (!text) return alert('Please write something before posting.');
+  if (!currentUser || !users[currentUser]) return alert("You must be logged in to post.");
 
   const newPost = {
     id: Date.now().toString(),
@@ -263,7 +266,7 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     document.querySelectorAll(".tab-page").forEach(tab => tab.classList.remove("active"));
     document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
     const tabId = "tab-" + btn.dataset.tab;
-    document.getElementById(tabId).classList.add("active");
+    document.getElementById(tabId)?.classList.add("active");
     btn.classList.add("active");
     if (tabId === "tab-trending") renderTrendingPosts();
   });
@@ -286,10 +289,7 @@ function refreshInsights() {
 document.getElementById('join-game-btn')?.addEventListener('click', () => {
   const username = currentUser || 'Guest_' + Math.floor(Math.random() * 9999);
   if (gameState.players.includes(username)) return;
-  if (gameState.players.length >= 2) {
-    showNotification("❌ Game is full!");
-    return;
-  }
+  if (gameState.players.length >= 2) return showNotification("❌ Game is full!");
 
   gameState.players.push(username);
   if (gameState.players.length === 1) {
@@ -302,6 +302,7 @@ document.getElementById('join-game-btn')?.addEventListener('click', () => {
 function updateGameUI() {
   const status = document.getElementById('game-status');
   if (!status) return;
+
   if (gameState.players.length === 1) {
     status.innerHTML = `Player 1 joined: <strong>${gameState.players[0]}</strong><br>Waiting for Player 2...`;
   } else if (gameState.players.length === 2) {
