@@ -311,3 +311,46 @@ function refreshInsights() {
 // ======= Init =======
 renderUI();
 renderTrendingPosts();
+
+// === Multiplayer Mini Game ===
+let isPlayerOne = false;
+let gameState = {
+  players: [],
+  turn: null,
+};
+
+document.getElementById('join-game-btn').addEventListener('click', () => {
+  const username = currentUser || 'Guest_' + Math.floor(Math.random() * 9999);
+
+  if (!gameState.players.includes(username)) {
+    gameState.players.push(username);
+    if (gameState.players.length === 1) {
+      isPlayerOne = true;
+      gameState.turn = username;
+    }
+    updateGameUI();
+  }
+});
+
+function updateGameUI() {
+  const status = document.getElementById('game-status');
+  if (gameState.players.length === 1) {
+    status.innerHTML = `Player 1 joined: <strong>${gameState.players[0]}</strong><br>Waiting for Player 2...`;
+  } else if (gameState.players.length === 2) {
+    status.innerHTML = `
+      Player 1: <strong>${gameState.players[0]}</strong><br>
+      Player 2: <strong>${gameState.players[1]}</strong><br><br>
+      <strong>It's ${gameState.turn}'s turn!</strong>
+      <br><br>
+      <button onclick="makeMove()">Make Move</button>
+    `;
+  }
+}
+
+function makeMove() {
+  const currentIndex = gameState.players.indexOf(gameState.turn);
+  const nextIndex = (currentIndex + 1) % gameState.players.length;
+  gameState.turn = gameState.players[nextIndex];
+  showNotification(`${gameState.turn}'s turn!`);
+  updateGameUI();
+}
