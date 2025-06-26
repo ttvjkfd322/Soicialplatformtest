@@ -118,6 +118,10 @@ function renderPosts() {
 
 // ======= Event Handlers =======
 
+
+
+
+
 // Signup
 signupBtn.onclick = () => {
   const username = signupUsernameInput.value.trim();
@@ -141,6 +145,9 @@ signupBtn.onclick = () => {
   alert(`Welcome, ${username}! You are now signed up and logged in.`);
   renderUI();
 };
+
+
+gg
 
 // Login
 loginBtn.onclick = () => {
@@ -171,6 +178,60 @@ logoutBtn.onclick = () => {
   saveData();
   renderUI();
 };
+
+document.addEventListener('DOMContentLoaded', () => {
+  const posts = document.querySelectorAll('.post');
+
+  posts.forEach(post => {
+    const likeBtn = post.querySelector('.like-btn');
+    const likeCount = post.querySelector('.like-count');
+    const commentToggle = post.querySelector('.comment-toggle');
+    const commentInput = post.querySelector('.comment-input');
+    const commentSubmit = post.querySelector('.comment-submit');
+    const commentsList = post.querySelector('.comments-list');
+    const commentsSection = post.querySelector('.comments-section');
+    const followBtn = post.querySelector('.follow-btn');
+
+    let liked = false;
+    let following = false;
+
+    likeBtn.addEventListener('click', () => {
+      liked = !liked;
+      likeBtn.classList.toggle('liked', liked);
+      let count = parseInt(likeCount.textContent);
+      likeCount.textContent = liked ? count + 1 : count - 1;
+      showNotification(liked ? "You liked the post ❤️" : "You unliked the post 💔");
+    });
+
+    commentToggle.addEventListener('click', () => {
+      commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
+    });
+
+    commentSubmit.addEventListener('click', () => {
+      const text = commentInput.value.trim();
+      if (text) {
+        const comment = document.createElement('p');
+        comment.textContent = `You: ${text}`;
+        commentsList.appendChild(comment);
+        commentInput.value = '';
+        showNotification("💬 Comment posted!");
+      }
+    });
+
+    followBtn.addEventListener('click', () => {
+      following = !following;
+      followBtn.textContent = following ? "Following ✓" : "+ Follow";
+      showNotification(following ? "👤 You're now following this user!" : "👋 Unfollowed user.");
+    });
+  });
+});
+
+function showNotification(msg) {
+  const bar = document.getElementById('notification-bar');
+  bar.textContent = msg;
+  bar.style.display = 'block';
+  setTimeout(() => bar.style.display = 'none', 3000);
+}
 
 // Create Post
 postBtn.onclick = () => {
