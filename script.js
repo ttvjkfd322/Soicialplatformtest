@@ -39,7 +39,6 @@ function saveData() {
 
 function renderUI() {
   if (currentUser) {
-    // Show user info and post creation & feed
     authSection.classList.add('hidden');
     postCreationSection.classList.remove('hidden');
     feedSection.classList.remove('hidden');
@@ -47,7 +46,6 @@ function renderUI() {
     usernameDisplay.textContent = currentUser;
     renderPosts();
   } else {
-    // Show auth forms only
     authSection.classList.remove('hidden');
     postCreationSection.classList.add('hidden');
     feedSection.classList.add('hidden');
@@ -56,10 +54,8 @@ function renderUI() {
 }
 
 function renderPosts() {
-  // Clear container
   postsContainer.innerHTML = '';
 
-  // Sort posts by timestamp descending (latest first)
   const sortedPosts = posts.slice().sort((a, b) => b.timestamp - a.timestamp);
 
   if (sortedPosts.length === 0) {
@@ -71,56 +67,130 @@ function renderPosts() {
     const postEl = document.createElement('div');
     postEl.className = 'post';
 
-    // Author
     const authorEl = document.createElement('div');
     authorEl.className = 'post-author';
-    authorEl.textContent = post.author;
+    authorEl.textContent = `@${post.author}`;
 
-    // Text
     const textEl = document.createElement('div');
     textEl.className = 'post-text';
     textEl.textContent = post.text;
 
-    // Actions (likes)
     const actionsEl = document.createElement('div');
     actionsEl.className = 'post-actions';
 
     const likeBtn = document.createElement('button');
-    likeBtn.textContent = `❤️ ${post.likes.length}`;
-    likeBtn.title = 'Like/Unlike';
-
-    // Disable like button if no user logged in
+    likeBtn.className = 'like-btn';
+    likeBtn.innerHTML = `❤️ <span class="like-count">${post.likes.length}</span>`;
     likeBtn.disabled = !currentUser;
 
     likeBtn.onclick = () => {
       if (!currentUser) return;
-      const userLikes = post.likes;
-      const userIndex = userLikes.indexOf(currentUser);
+      const userIndex = post.likes.indexOf(currentUser);
       if (userIndex === -1) {
-        userLikes.push(currentUser);
+        post.likes.push(currentUser);
       } else {
-        userLikes.splice(userIndex, 1);
+        post.likes.splice(userIndex, 1);
       }
       saveData();
       renderPosts();
+      renderTrendingPosts();
     };
 
-    actionsEl.appendChild(likeBtn);
+    const commentToggle = document.createElement('button');
+    commentToggle.className = 'comment-toggle';
+    commentToggle.textContent = '💬 Comments';
 
-    // Assemble post
+    const followBtn = document.createElement('button');
+    followBtn.className = 'follow-btn';
+    followBtn.textContent = '+ Follow';
+
+    actionsEl.appendChild(likeBtn);
+    actionsEl.appendChild(commentToggle);
+    actionsEl.appendChild(followBtn);
+
+    const commentsSection = document.createElement('div');
+    commentsSection.className = 'comments-section';
+    commentsSection.style.display = 'none';
+
+    const commentsList = document.createElement('div');
+    commentsList.className = 'comments-list';
+
+    const commentInput = document.createElement('input');
+    commentInput.className = 'comment-input';
+    commentInput.placeholder = 'Write a comment...';
+
+    const commentSubmit = document.createElement('button');
+    commentSubmit.className = 'comment-submit';
+    commentSubmit.textContent = 'Post';
+
+    commentToggle.onclick = () => {
+      commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
+    };
+
+    commentSubmit.onclick = () => {
+      const text = commentInput.value.trim();
+      if (text) {
+        const comment = document.createElement('p');
+        comment.textContent = `You: ${text}`;
+        commentsList.appendChild(comment);
+        commentInput.value = '';
+        showNotification("💬 Comment posted!");
+      }
+    };
+
+    followBtn.onclick = () => {
+      const following = followBtn.textContent === "+ Follow";
+      followBtn.textContent = following ? "Following ✓" : "+ Follow";
+      showNotification(following ? "👤 You're now following this user!" : "👋 Unfollowed user.");
+    };
+
+    commentsSection.appendChild(commentsList);
+    commentsSection.appendChild(commentInput);
+    commentsSection.appendChild(commentSubmit);
+
     postEl.appendChild(authorEl);
     postEl.appendChild(textEl);
     postEl.appendChild(actionsEl);
+    postEl.appendChild(commentsSection);
 
     postsContainer.appendChild(postEl);
   }
 }
 
-// ======= Event Handlers =======
+function renderTrendingPosts() {
+  const container = document.getElementById('trending-posts');
+  if (!container) return;
 
+  container.innerHTML = '';
 
+  const sorted = posts.slice().sort((a, b) => b.likes.length - a.likes.length);
 
+  if (sorted.length === 0) {
+    container.innerHTML = '<p>No trending posts yet!</p>';
+    return;
+  }
 
+  for (const post of sorted.slice(0, 5)) {
+    const div = document.createElement('div');
+    div.className = 'post';
+    div.innerHTML = `
+      <h3>@${post.author}</h3>
+      <p>${post.text}</p>
+      <p>❤️ ${post.likes.length} likes</p>
+    `;
+    container.appendChild(div);
+  }
+}
+
+function showNotification(msg) {
+  const bar = document.getElementById('notification-bar');
+  if (!bar) return;
+  bar.textContent = msg;
+  bar.style.display = 'block';
+  setTimeout(() => bar.style.display = 'none', 3000);
+}
+
+// ======= Event Listeners =======
 
 // Signup
 signupBtn.onclick = () => {
@@ -144,10 +214,8 @@ signupBtn.onclick = () => {
   signupPasswordInput.value = '';
   alert(`Welcome, ${username}! You are now signed up and logged in.`);
   renderUI();
+  renderTrendingPosts();
 };
-
-
-gg
 
 // Login
 loginBtn.onclick = () => {
@@ -170,6 +238,7 @@ loginBtn.onclick = () => {
   loginPasswordInput.value = '';
   alert(`Welcome back, ${username}!`);
   renderUI();
+  renderTrendingPosts();
 };
 
 // Logout
@@ -177,75 +246,10 @@ logoutBtn.onclick = () => {
   currentUser = null;
   saveData();
   renderUI();
+  renderTrendingPosts();
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-  const posts = document.querySelectorAll('.post');
-
-  posts.forEach(post => {
-    const likeBtn = post.querySelector('.like-btn');
-    const likeCount = post.querySelector('.like-count');
-    const commentToggle = post.querySelector('.comment-toggle');
-    const commentInput = post.querySelector('.comment-input');
-    const commentSubmit = post.querySelector('.comment-submit');
-    const commentsList = post.querySelector('.comments-list');
-    const commentsSection = post.querySelector('.comments-section');
-    const followBtn = post.querySelector('.follow-btn');
-
-    let liked = false;
-    let following = false;
-
-    likeBtn.addEventListener('click', () => {
-      liked = !liked;
-      likeBtn.classList.toggle('liked', liked);
-      let count = parseInt(likeCount.textContent);
-      likeCount.textContent = liked ? count + 1 : count - 1;
-      showNotification(liked ? "You liked the post ❤️" : "You unliked the post 💔");
-    });
-
-    commentToggle.addEventListener('click', () => {
-      commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
-    });
-
-    commentSubmit.addEventListener('click', () => {
-      const text = commentInput.value.trim();
-      if (text) {
-        const comment = document.createElement('p');
-        comment.textContent = `You: ${text}`;
-        commentsList.appendChild(comment);
-        commentInput.value = '';
-        showNotification("💬 Comment posted!");
-      }
-    });
-
-    followBtn.addEventListener('click', () => {
-      following = !following;
-      followBtn.textContent = following ? "Following ✓" : "+ Follow";
-      showNotification(following ? "👤 You're now following this user!" : "👋 Unfollowed user.");
-    });
-    document.querySelectorAll(".tab-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    // Remove active from all tabs and buttons
-    document.querySelectorAll(".tab-page").forEach(tab => tab.classList.remove("active"));
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-
-    // Add active to clicked tab and button
-    const tabId = "tab-" + btn.dataset.tab;
-    document.getElementById(tabId).classList.add("active");
-    btn.classList.add("active");
-  });
-});
-  });
-});
-
-function showNotification(msg) {
-  const bar = document.getElementById('notification-bar');
-  bar.textContent = msg;
-  bar.style.display = 'block';
-  setTimeout(() => bar.style.display = 'none', 3000);
-}
-
-// Create Post
+// Post
 postBtn.onclick = () => {
   const text = postTextInput.value.trim();
 
@@ -266,7 +270,44 @@ postBtn.onclick = () => {
   saveData();
   postTextInput.value = '';
   renderPosts();
+  renderTrendingPosts();
 };
 
-// ======= Initialize =======
+// Tabs
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-page").forEach(tab => tab.classList.remove("active"));
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+
+    const tabId = "tab-" + btn.dataset.tab;
+    document.getElementById(tabId).classList.add("active");
+    btn.classList.add("active");
+
+    // If switching to trending, re-render it
+    if (tabId === "tab-trending") {
+      renderTrendingPosts();
+    }
+  });
+});
+
+// AI Panels
+function askAI() {
+  const input = document.getElementById('ai-input').value.trim();
+  const output = document.getElementById('ai-output');
+
+  if (!input) {
+    output.textContent = "Please enter a question.";
+    return;
+  }
+
+  output.textContent = "🤖 Thinking... (AI connection coming soon)";
+}
+
+function refreshInsights() {
+  const div = document.getElementById('ai-insights');
+  div.innerHTML = "<p>Re-analyzing site behavior... (AI engine placeholder)</p>";
+}
+
+// ======= Init =======
 renderUI();
+renderTrendingPosts();
