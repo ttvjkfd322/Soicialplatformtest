@@ -223,6 +223,18 @@ document.addEventListener('DOMContentLoaded', () => {
       followBtn.textContent = following ? "Following ✓" : "+ Follow";
       showNotification(following ? "👤 You're now following this user!" : "👋 Unfollowed user.");
     });
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    // Remove active from all tabs and buttons
+    document.querySelectorAll(".tab-page").forEach(tab => tab.classList.remove("active"));
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+
+    // Add active to clicked tab and button
+    const tabId = "tab-" + btn.dataset.tab;
+    document.getElementById(tabId).classList.add("active");
+    btn.classList.add("active");
+  });
+});
   });
 });
 
