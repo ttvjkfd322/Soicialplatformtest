@@ -33,22 +33,6 @@ function saveData() {
   currentUser ? localStorage.setItem('currentUser', currentUser) : localStorage.removeItem('currentUser');
 }
 
-function renderUI() {
-  if (currentUser && users[currentUser]) {
-    authSection.classList.add('hidden');
-    postCreationSection.classList.remove('hidden');
-    feedSection.classList.remove('hidden');
-    userInfoDiv.classList.remove('hidden');
-    usernameDisplay.textContent = currentUser;
-    renderPosts();
-  } else {
-    authSection.classList.remove('hidden');
-    postCreationSection.classList.add('hidden');
-    feedSection.classList.add('hidden');
-    userInfoDiv.classList.add('hidden');
-  }
-}
-
 function renderPosts() {
   postsContainer.innerHTML = '';
   const sortedPosts = posts.slice().sort((a, b) => b.timestamp - a.timestamp);
@@ -350,8 +334,6 @@ document.getElementById('run-bot-btn')?.addEventListener('click', () => {
   }
 });
 
-// ======= Init App =======
-
 // ======= Admin Dashboard Logic =======
 function renderAdminDashboard() {
   const adminSection = document.getElementById('tab-admin');
@@ -383,7 +365,7 @@ function renderAdminDashboard() {
   }
 }
 
-// ======= Update renderUI to call it too =======
+// ======= Final Unified UI Render =======
 function renderUI() {
   if (currentUser && users[currentUser]) {
     authSection.classList.add('hidden');
@@ -400,5 +382,6 @@ function renderUI() {
   }
   renderAdminDashboard();
 }
+
 renderUI();
 renderTrendingPosts();
