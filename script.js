@@ -351,5 +351,54 @@ document.getElementById('run-bot-btn')?.addEventListener('click', () => {
 });
 
 // ======= Init App =======
+
+// ======= Admin Dashboard Logic =======
+function renderAdminDashboard() {
+  const adminSection = document.getElementById('tab-admin');
+  if (!adminSection) return;
+
+  if (currentUser === 'admin') {
+    adminSection.style.display = 'block';
+
+    // List Users
+    const userList = document.getElementById('admin-user-list');
+    userList.innerHTML = '';
+    Object.keys(users).forEach(u => {
+      const li = document.createElement('li');
+      li.textContent = u + (u === 'admin' ? ' (admin)' : '');
+      userList.appendChild(li);
+    });
+
+    // List Posts
+    const postList = document.getElementById('admin-post-list');
+    postList.innerHTML = '';
+    posts.forEach(post => {
+      const li = document.createElement('li');
+      li.textContent = `@${post.author}: ${post.text}`;
+      postList.appendChild(li);
+    });
+
+  } else {
+    adminSection.style.display = 'none';
+  }
+}
+
+// ======= Update renderUI to call it too =======
+function renderUI() {
+  if (currentUser && users[currentUser]) {
+    authSection.classList.add('hidden');
+    postCreationSection.classList.remove('hidden');
+    feedSection.classList.remove('hidden');
+    userInfoDiv.classList.remove('hidden');
+    usernameDisplay.textContent = currentUser;
+    renderPosts();
+  } else {
+    authSection.classList.remove('hidden');
+    postCreationSection.classList.add('hidden');
+    feedSection.classList.add('hidden');
+    userInfoDiv.classList.add('hidden');
+  }
+  renderAdminDashboard();
+}
 renderUI();
 renderTrendingPosts();
