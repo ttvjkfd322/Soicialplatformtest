@@ -4,7 +4,7 @@ let currentUser = localStorage.getItem('currentUser') || null;
 let posts = JSON.parse(localStorage.getItem('posts')) || [];
 
 let isPlayerOne = false;
-let gameState = { players: [], turn: null };
+let gameState = { players: [], turn: null, gameType: null, gameData: {} };
 
 // ======= DOM References =======
 const signupUsernameInput = document.getElementById('signup-username');
@@ -25,6 +25,9 @@ const feedSection = document.getElementById('feed-section');
 const postTextInput = document.getElementById('post-text');
 const postBtn = document.getElementById('post-btn');
 const postsContainer = document.getElementById('posts-container');
+
+const gameStatus = document.getElementById('game-status');
+const joinGameBtn = document.getElementById('join-game-btn');
 
 // ======= Save & Render =======
 function saveData() {
@@ -272,41 +275,134 @@ function askAI() {
 }
 
 // ======= Game Logic =======
-document.getElementById('join-game-btn')?.addEventListener('click', () => {
-  const username = currentUser || 'Guest_' + Math.floor(Math.random() * 9999);
-  if (gameState.players.includes(username)) return;
-  if (gameState.players.length >= 2) return showNotification("❌ Game is full!");
 
-  gameState.players.push(username);
+// Join game button (choose single or two-player mode)
+joinGameBtn?.addEventListener('click', () => {
+  if (!currentUser) {
+    showNotification("⚠️ Please log in to play the game!");
+    return;
+  }
+  if (gameState.players.includes(currentUser)) {
+    showNotification("⚠️ You already joined the game!");
+    return;
+  }
+
+  if (gameState.players.length >= 2) {
+    showNotification("❌ Game is full!");
+    return;
+  }
+
+  gameState.players.push(currentUser);
+
+  // Default to single-player game if only one player
   if (gameState.players.length === 1) {
     isPlayerOne = true;
-    gameState.turn = username;
+    gameState.turn = currentUser;
+    gameState.gameType = 'single'; // single-player
+    gameState.gameData = { moves: [] };
+    showNotification("🎮 Single Player Mode Started!");
   }
+
+  // If second player joins, switch to two-player mode
+  if (gameState.players.length === 2) {
+    gameState.gameType = 'multi';
+    gameState.turn = gameState.players[0];
+    gameState.gameData = { moves: [] };
+    showNotification("🎮 Two Player Mode Started!");
+  }
+
   updateGameUI();
 });
 
 function updateGameUI() {
-  const status = document.getElementById('game-status');
-  if (!status) return;
+  if (!gameStatus) return;
 
-  if (gameState.players.length === 1) {
-    status.innerHTML = `Player 1: <strong>${gameState.players[0]}</strong><br>Waiting for Player 2...`;
-  } else if (gameState.players.length === 2) {
-    status.innerHTML = `
+  if (gameState.gameType === 'single') {
+    gameStatus.innerHTML = `
+      Single Player Mode<br>
+      Player: <strong>${gameState.players[0]}</strong><br><br>
+      <button onclick="singlePlayerMove()">Make Your Move</button><br><br>
+      <div id="single-player-result"></div>
+      <button onclick="resetGame()">End Game</button>
+    `;
+  } else if (gameState.gameType === 'multi') {
+    gameStatus.innerHTML = `
+      Two Player Mode<br>
       Player 1: <strong>${gameState.players[0]}</strong><br>
       Player 2: <strong>${gameState.players[1]}</strong><br><br>
       <strong>It's ${gameState.turn}'s turn!</strong><br><br>
-      <button onclick="makeMove()">Make Move</button>
+      <button onclick="makeMove()">Make Move</button><br><br>
+      <button onclick="resetGame()">End Game</button>
     `;
+  } else {
+    gameStatus.textContent = "Click 'Join Game' to start!";
   }
 }
 
+// Single player "Make your move" example - just simulate a random move and result
+function singlePlayerMove() {
+  if (gameState.gameType !== 'single') return;
+  const moves = ['Attack', 'Defend', 'Heal'];
+  const move = moves[Math.floor(Math.random() * moves.length)];
+  gameState.gameData.moves.push(move);
+  document.getElementById('single-player-result').textContent = `You chose: ${move}`;
+  showNotification(`You made the move: ${move}`);
+}
+
+// Multi player turn switch
 function makeMove() {
+  if (gameState.gameType !== 'multi') return;
+
   const currentIndex = gameState.players.indexOf(gameState.turn);
   const nextIndex = (currentIndex + 1) % gameState.players.length;
   gameState.turn = gameState.players[nextIndex];
   showNotification(`${gameState.turn}'s turn!`);
   updateGameUI();
+}
+
+function resetGame() {
+  gameState = { players: [], turn: null, gameType: null, gameData: {} };
+  isPlayerOne = false;
+  if (gameStatus) gameStatus.textContent = "Game ended. Click 'Join Game' to start again.";
+  showNotification("🛑 Game reset.");
+}
+
+// ======= Mini Games Section =======
+
+// Coin Flip
+function flipCoin() {
+  const result = Math.random() < 0.5 ? 'Heads' : 'Tails';
+  showNotification(`🪙 Coin Flip: ${result}`);
+  alert(`🪙 Coin Flip result: ${result}`);
+}
+
+// Dice Roll
+function rollDice() {
+  const result = Math.floor(Math.random() * 6) + 1;
+  showNotification(`🎲 Dice Roll: ${result}`);
+  alert(`🎲 Dice rolled a ${result}`);
+}
+
+// Rock Paper Scissors
+function playRPS(userChoice) {
+  const choices = ['rock', 'paper', 'scissors'];
+  const botChoice = choices[Math.floor(Math.random() * choices.length)];
+
+  let result = '';
+  if (userChoice === botChoice) {
+    result = "It's a tie!";
+  } else if (
+    (userChoice === 'rock' && botChoice === 'scissors') ||
+    (userChoice === 'paper' && botChoice === 'rock') ||
+    (userChoice === 'scissors' && botChoice === 'paper')
+  ) {
+    result = 'You win!';
+  } else {
+    result = 'You lose!';
+  }
+
+  showNotification(`🖐 You: ${userChoice}, Bot: ${botChoice}. ${result}`);
+  alert(`🖐 You chose ${userChoice}, Bot chose ${botChoice}. ${result}`);
 }
 
 // ======= Bot Creator =======
@@ -386,3 +482,4 @@ function renderUI() {
 renderUI();
 renderTrendingPosts();
 renderExplorePosts();
+updateGameUI();
