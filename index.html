@@ -8,35 +8,18 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- === ADMIN DASHBOARD === -->
-  <section id="tab-admin" class="tab-page">
-    <h2>🛠️ Admin Dashboard</h2>
-    <p>Welcome, Admin! Here you can manage users and posts.</p>
-
-    <div id="admin-users" style="margin-top: 2rem;">
-      <h3>👥 Users</h3>
-      <ul id="admin-user-list"></ul>
-    </div>
-
-    <div id="admin-posts" style="margin-top: 2rem;">
-      <h3>📝 All Posts</h3>
-      <ul id="admin-post-list"></ul>
-    </div>
-  </section>
-
   <!-- === Navigation Tabs === -->
   <nav id="main-nav">
-    <!-- Add this with the other nav buttons -->
-    <button class="tab-btn" data-tab="admin">🛠️ Admin</button>
     <button class="tab-btn active" data-tab="home">🏠 Home</button>
     <button class="tab-btn" data-tab="trending">🔥 Trending</button>
     <button class="tab-btn" data-tab="explore">🌐 Explore</button>
     <button class="tab-btn" data-tab="rules">📜 Rules</button>
     <button class="tab-btn" data-tab="play">🎮 Play</button>
     <button class="tab-btn" data-tab="livestreams">🎥 Livestreams</button>
+    <button class="tab-btn" data-tab="admin">🛠️ Admin</button>
   </nav>
 
-  <!-- === HOME TAB === -->
+  <!-- === TABS === -->
   <section id="tab-home" class="tab-page active">
     <header>
       <h1>Gtok 🌸 Social Site</h1>
@@ -64,22 +47,6 @@
         </div>
       </section>
 
-      <!-- === AI Suggestions Section === -->
-      <section id="improve-panel" style="margin-top: 3rem;">
-        <h2>🧠 Website Improvement Engine</h2>
-        <div id="ai-insights">
-          <p>Analyzing site usage...</p>
-        </div>
-        <button onclick="refreshInsights()">🔄 Refresh Insights</button>
-      </section>
-
-      <section id="ai-suggestions" style="margin-top: 3rem;">
-        <h2>🤖 AI-Powered Suggestions</h2>
-        <textarea id="ai-input" placeholder="Ask how to improve your site..." rows="3" style="width: 100%;"></textarea>
-        <button onclick="askAI()">Ask AI</button>
-        <pre id="ai-output" style="background: #1e1e1e; color: #eee; padding: 1rem; margin-top: 1rem; border-radius: 6px;"></pre>
-      </section>
-
       <!-- === Post Creation === -->
       <section id="post-creation" class="hidden">
         <h2>Create Post</h2>
@@ -87,84 +54,85 @@
         <button id="post-btn">Post</button>
       </section>
 
-      <!-- === Posts Feed === -->
+      <!-- === Feed === -->
       <section id="feed-section" class="hidden">
         <h2>Feed</h2>
         <div id="posts-container"></div>
         <div id="notification-bar"></div>
       </section>
 
+      <!-- === AI Suggestions === -->
+      <section id="ai-suggestions" style="margin-top: 3rem;">
+        <h2>🤖 AI-Powered Suggestions</h2>
+        <textarea id="ai-input" placeholder="Ask how to improve your site..." rows="3"></textarea>
+        <button id="ask-ai-btn">Ask AI</button>
+        <pre id="ai-output"></pre>
+      </section>
+
       <!-- === Vlog Recorder === -->
       <section id="vlog-recorder" style="margin-top: 3rem;">
         <h2>🎥 Record Your Vlog</h2>
-        <video id="preview" autoplay muted playsinline style="width: 100%; max-width: 400px; background: black;"></video>
-        <div style="margin-top: 1rem;">
+        <video id="preview" autoplay muted playsinline></video>
+        <div>
           <button id="start-record">Start Recording</button>
           <button id="stop-record" disabled>Stop Recording</button>
         </div>
-        <h3>Playback</h3>
-        <video id="playback" controls style="width: 100%; max-width: 400px; background: black;"></video>
-        <a id="download-link" style="display: none; margin-top: 0.5rem;">Download Video</a>
+        <video id="playback" controls></video>
+        <a id="download-link" style="display: none;">Download Video</a>
       </section>
     </main>
   </section>
 
-  <!-- === TRENDING TAB === -->
   <section id="tab-trending" class="tab-page">
     <h2>🔥 Trending Posts</h2>
     <div id="trending-posts"></div>
   </section>
 
-  <!-- === EXPLORE TAB === -->
   <section id="tab-explore" class="tab-page">
-    <h2>🌐 Explore New Content</h2>
-    <p>Discover random posts and users!</p>
+    <h2>🌐 Explore</h2>
+    <div id="explore-posts"></div>
   </section>
 
-  <!-- === RULES TAB === -->
   <section id="tab-rules" class="tab-page">
-    <h2>📜 Gtok Site Rules</h2>
+    <h2>📜 Site Rules</h2>
     <ul>
-      <li>Be kind and respectful to others</li>
-      <li>No inappropriate or hateful content</li>
-      <li>Keep posts relevant and fun</li>
-      <li>No spamming or bot behavior</li>
-      <li>Report issues to moderators</li>
+      <li>Be respectful</li>
+      <li>No spam or hateful content</li>
     </ul>
   </section>
 
-  <!-- === PLAY TAB === -->
   <section id="tab-play" class="tab-page">
-    <h2>🎮 Mini Multiplayer Game</h2>
-    <div id="game-area">
-      <p>Waiting for another player...</p>
-      <button id="join-game-btn">Join Game</button>
-      <div id="game-status" style="margin-top: 1rem;"></div>
-    </div>
+    <h2>🎮 Mini Game</h2>
+    <button id="join-game-btn">Join Game</button>
+    <div id="game-status"></div>
   </section>
 
-  <!-- === LIVESTREAMS TAB === -->
   <section id="tab-livestreams" class="tab-page">
-    <h2>🎥 Upcoming Livestreams</h2>
-    <p>Feature coming soon — schedule and join live sessions!</p>
+    <h2>🎥 Livestreams</h2>
+    <p>Coming soon...</p>
   </section>
 
-  <!-- === BOT CREATOR DASHBOARD === -->
-  <section id="bot-dashboard" style="margin-top: 3rem; border-top: 1px solid #444; padding-top: 1rem; max-width: 600px; width: 100%;">
+  <section id="tab-admin" class="tab-page">
+    <h2>🛠️ Admin Dashboard</h2>
+    <ul id="admin-user-list"></ul>
+    <ul id="admin-post-list"></ul>
+  </section>
+
+  <!-- === Bot Creator === -->
+  <section id="bot-dashboard">
     <h2>🤖 Discord Bot Creator</h2>
-    <textarea id="bot-code" placeholder="Write your bot script here..." rows="8" style="width: 100%; background: #1e1e1e; color: #eee; border-radius: 6px; border: 1px solid #333; padding: 1rem; font-family: monospace;"></textarea>
-    <button id="run-bot-btn" style="margin-top: 1rem;">Run Bot Script</button>
-    <pre id="bot-output" style="background: #121212; color: #f44336; margin-top: 1rem; padding: 1rem; border-radius: 6px; height: 150px; overflow-y: auto;"></pre>
+    <textarea id="bot-code" rows="8"></textarea>
+    <button id="run-bot-btn">Run Script</button>
+    <pre id="bot-output"></pre>
   </section>
 
-  <!-- === Vlog Recorder Script === -->
+  <!-- === Recorder Script === -->
   <script>
     const preview = document.getElementById('preview');
     const playback = document.getElementById('playback');
     const startBtn = document.getElementById('start-record');
     const stopBtn = document.getElementById('stop-record');
     const downloadLink = document.getElementById('download-link');
-
     let mediaRecorder;
     let recordedChunks = [];
 
@@ -172,7 +140,6 @@
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         preview.srcObject = stream;
-
         mediaRecorder = new MediaRecorder(stream);
 
         mediaRecorder.ondataavailable = e => {
@@ -182,19 +149,15 @@
         mediaRecorder.onstop = () => {
           const blob = new Blob(recordedChunks, { type: 'video/webm' });
           recordedChunks = [];
-
           playback.src = URL.createObjectURL(blob);
           downloadLink.href = playback.src;
           downloadLink.download = 'vlog.webm';
           downloadLink.style.display = 'inline-block';
-          downloadLink.textContent = 'Download your video';
         };
 
         startBtn.disabled = false;
       } catch (err) {
-        alert('Could not access your camera and microphone: ' + err.message);
-        startBtn.disabled = true;
-        stopBtn.disabled = true;
+        alert(err);
       }
     }
 
@@ -204,19 +167,16 @@
       startBtn.disabled = true;
       stopBtn.disabled = false;
       downloadLink.style.display = 'none';
-      playback.src = '';
     };
-
     stopBtn.onclick = () => {
       mediaRecorder.stop();
       startBtn.disabled = false;
       stopBtn.disabled = true;
     };
-
     initCamera();
   </script>
 
-  <!-- === Main JS App === -->
+  <!-- === Main App === -->
   <script src="script.js"></script>
 </body>
 </html>
