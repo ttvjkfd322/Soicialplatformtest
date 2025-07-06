@@ -65,7 +65,7 @@
       <section id="ai-suggestions" style="margin-top: 3rem;">
         <h2>🤖 AI-Powered Suggestions</h2>
         <textarea id="ai-input" placeholder="Ask how to improve your site..." rows="3"></textarea>
-        <button id="ask-ai-btn">Ask AI</button>
+        <button id="ask-ai-btn" onclick="askAI()">Ask AI</button>
         <pre id="ai-output"></pre>
       </section>
 
@@ -102,9 +102,38 @@
   </section>
 
   <section id="tab-play" class="tab-page">
-    <h2>🎮 Mini Game</h2>
-    <button id="join-game-btn">Join Game</button>
-    <div id="game-status"></div>
+    <h2>🎮 Mini Games</h2>
+
+    <!-- === Coin Flip === -->
+    <div class="mini-game">
+      <h3>🪙 Coin Flip</h3>
+      <button onclick="flipCoin()">Flip Coin</button>
+      <p id="coin-result"></p>
+    </div>
+
+    <!-- === Dice Roll === -->
+    <div class="mini-game">
+      <h3>🎲 Dice Roll</h3>
+      <button onclick="rollDice()">Roll Dice</button>
+      <p id="dice-result"></p>
+    </div>
+
+    <!-- === Rock Paper Scissors === -->
+    <div class="mini-game">
+      <h3>✊🖐✌ Rock Paper Scissors</h3>
+      <button onclick="playRPS('rock')">Rock</button>
+      <button onclick="playRPS('paper')">Paper</button>
+      <button onclick="playRPS('scissors')">Scissors</button>
+      <p id="rps-result"></p>
+    </div>
+
+    <!-- === 2-Player Turn Game === -->
+    <div id="game-area">
+      <h3>👥 Turn-Based Game</h3>
+      <button id="join-game-btn">Join Game</button>
+      <button onclick="startSinglePlayer()">1 Player Mode</button>
+      <div id="game-status"></div>
+    </div>
   </section>
 
   <section id="tab-livestreams" class="tab-page">
