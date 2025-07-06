@@ -6,6 +6,9 @@ let posts = JSON.parse(localStorage.getItem('posts')) || [];
 let isPlayerOne = false;
 let gameState = { players: [], turn: null, gameType: null, gameData: {} };
 
+// Chat messages store (simple in-memory)
+let chatMessages = [];
+
 // ======= DOM References =======
 const signupUsernameInput = document.getElementById('signup-username');
 const signupPasswordInput = document.getElementById('signup-password');
@@ -28,6 +31,13 @@ const postsContainer = document.getElementById('posts-container');
 
 const gameStatus = document.getElementById('game-status');
 const joinGameBtn = document.getElementById('join-game-btn');
+
+// Livestream chat elements
+const chatMessagesDiv = document.getElementById('chat-messages');
+const chatForm = document.getElementById('chat-form');
+const chatInput = document.getElementById('chat-input');
+const chatSortSelect = document.getElementById('chat-sort');
+const chatNotificationsCheckbox = document.getElementById('chat-notifications');
 
 // ======= Save & Render =======
 function saveData() {
@@ -253,6 +263,7 @@ postBtn.onclick = () => {
   renderExplorePosts();
 };
 
+// Tab navigation
 document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".tab-page").forEach(tab => tab.classList.remove("active"));
@@ -461,25 +472,22 @@ function renderAdminDashboard() {
   }
 }
 
-// ======= Final Unified UI Render =======
-function renderUI() {
-  if (currentUser && users[currentUser]) {
-    authSection.classList.add('hidden');
-    postCreationSection.classList.remove('hidden');
-    feedSection.classList.remove('hidden');
-    userInfoDiv.classList.remove('hidden');
-    usernameDisplay.textContent = currentUser;
-    renderPosts();
-  } else {
-    authSection.classList.remove('hidden');
-    postCreationSection.classList.add('hidden');
-    feedSection.classList.add('hidden');
-    userInfoDiv.classList.add('hidden');
-  }
-  renderAdminDashboard();
-}
+// ======= Livestream Chat =======
+function renderChatMessages() {
+  if (!chatMessagesDiv) return;
 
-renderUI();
-renderTrendingPosts();
-renderExplorePosts();
-updateGameUI();
+  // Sort messages based on chatSortSelect value
+  let messagesToRender = [...chatMessages];
+  if (chatSortSelect?.value === 'newest') {
+    messagesToRender.reverse();
+  }
+
+  chatMessagesDiv.innerHTML = '';
+  messagesToRender.forEach(msg => {
+    const msgEl = document.createElement('div');
+    msgEl.className = 'chat-message';
+    msgEl.textContent = `[${new Date(msg.timestamp).toLocaleTimeString()}] @${msg.author}: ${msg.text}`;
+    chatMessagesDiv.appendChild(msgEl);
+  });
+
+  // Scroll to bottom if sorting by oldest,
