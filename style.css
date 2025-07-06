@@ -236,6 +236,43 @@ button:hover {
 
 #game-area button {
   margin-top: 1rem;
+  background: #f44336;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+  color: #fff;
+  font-size: 1rem;
+}
+
+#game-area button:hover {
+  background: #d32f2f;
+}
+
+#game-status {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  color: #f44336;
+  min-height: 3rem;
+}
+
+/* Buttons for mini games in #tab-play */
+#tab-play button {
+  margin: 0.5rem 0.5rem 0.5rem 0;
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: none;
+  background: #f44336;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#tab-play button:hover {
+  background: #d32f2f;
 }
 
 /* === Bot Dashboard === */
