@@ -75,6 +75,7 @@ function renderPosts() {
       saveData();
       renderPosts();
       renderTrendingPosts();
+      renderExplorePosts();
     };
 
     const commentToggle = document.createElement('button');
@@ -83,25 +84,22 @@ function renderPosts() {
 
     const followBtn = document.createElement('button');
     followBtn.className = 'follow-btn';
-
     const isFollowing = currentUser && users[currentUser]?.following?.includes(post.author);
     followBtn.textContent = isFollowing ? 'Following ✓' : '+ Follow';
 
     followBtn.onclick = () => {
       if (!currentUser || !users[currentUser] || currentUser === post.author) return;
-
       const following = users[currentUser].following || [];
       const idx = following.indexOf(post.author);
       if (idx === -1) {
         following.push(post.author);
         followBtn.textContent = 'Following ✓';
-        showNotification(`👤 You're now following @${post.author}`);
+        showNotification(`👤 Now following @${post.author}`);
       } else {
         following.splice(idx, 1);
         followBtn.textContent = '+ Follow';
         showNotification(`👋 Unfollowed @${post.author}`);
       }
-
       users[currentUser].following = following;
       saveData();
     };
@@ -136,7 +134,6 @@ function renderPosts() {
     commentSubmit.onclick = () => {
       const text = commentInput.value.trim();
       if (!text || !currentUser || !users[currentUser]) return;
-
       const comment = { author: currentUser, text };
       const postIndex = posts.findIndex(p => p.id === post.id);
       posts[postIndex].comments = posts[postIndex].comments || [];
@@ -144,6 +141,7 @@ function renderPosts() {
       saveData();
       renderPosts();
       renderTrendingPosts();
+      renderExplorePosts();
       showNotification("💬 Comment posted!");
     };
 
@@ -159,7 +157,6 @@ function renderTrendingPosts() {
   container.innerHTML = '';
 
   const sorted = posts.slice().sort((a, b) => b.likes.length - a.likes.length);
-
   if (sorted.length === 0) {
     container.innerHTML = '<p>No trending posts yet!</p>';
     return;
@@ -168,13 +165,23 @@ function renderTrendingPosts() {
   for (const post of sorted.slice(0, 5)) {
     const div = document.createElement('div');
     div.className = 'post';
-    div.innerHTML = `
-      <h3>@${post.author}</h3>
-      <p>${post.text}</p>
-      <p>❤️ ${post.likes.length} likes</p>
-    `;
+    div.innerHTML = `<h3>@${post.author}</h3><p>${post.text}</p><p>❤️ ${post.likes.length} likes</p>`;
     container.appendChild(div);
   }
+}
+
+function renderExplorePosts() {
+  const container = document.getElementById('explore-posts');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const shuffled = posts.slice().sort(() => 0.5 - Math.random());
+  shuffled.slice(0, 5).forEach(post => {
+    const div = document.createElement('div');
+    div.className = 'post';
+    div.innerHTML = `<h3>@${post.author}</h3><p>${post.text}</p>`;
+    container.appendChild(div);
+  });
 }
 
 function showNotification(msg) {
@@ -189,8 +196,8 @@ function showNotification(msg) {
 signupBtn.onclick = () => {
   const username = signupUsernameInput.value.trim();
   const password = signupPasswordInput.value.trim();
-  if (!username || !password) return alert('Please enter a username and password.');
-  if (users[username]) return alert('Username already exists.');
+  if (!username || !password) return alert('Enter username and password.');
+  if (users[username]) return alert('Username exists.');
 
   users[username] = { password: btoa(password), following: [] };
   currentUser = username;
@@ -199,14 +206,13 @@ signupBtn.onclick = () => {
   signupPasswordInput.value = '';
   alert(`Welcome, ${username}!`);
   renderUI();
-  renderTrendingPosts();
 };
 
 loginBtn.onclick = () => {
   const username = loginUsernameInput.value.trim();
   const password = loginPasswordInput.value.trim();
-  if (!username || !password) return alert('Please enter your username and password.');
-  if (!users[username] || users[username].password !== btoa(password)) return alert('Invalid username or password.');
+  if (!username || !password) return alert('Enter your username and password.');
+  if (!users[username] || users[username].password !== btoa(password)) return alert('Invalid login.');
 
   currentUser = username;
   saveData();
@@ -214,20 +220,18 @@ loginBtn.onclick = () => {
   loginPasswordInput.value = '';
   alert(`Welcome back, ${username}!`);
   renderUI();
-  renderTrendingPosts();
 };
 
 logoutBtn.onclick = () => {
   currentUser = null;
   saveData();
   renderUI();
-  renderTrendingPosts();
 };
 
 postBtn.onclick = () => {
   const text = postTextInput.value.trim();
-  if (!text) return alert('Please write something before posting.');
-  if (!currentUser || !users[currentUser]) return alert("You must be logged in to post.");
+  if (!text) return alert('Write something first.');
+  if (!currentUser || !users[currentUser]) return alert("You must be logged in.");
 
   const newPost = {
     id: Date.now().toString(),
@@ -243,6 +247,7 @@ postBtn.onclick = () => {
   postTextInput.value = '';
   renderPosts();
   renderTrendingPosts();
+  renderExplorePosts();
 };
 
 document.querySelectorAll(".tab-btn").forEach(btn => {
@@ -253,20 +258,17 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     document.getElementById(tabId)?.classList.add("active");
     btn.classList.add("active");
     if (tabId === "tab-trending") renderTrendingPosts();
+    if (tabId === "tab-explore") renderExplorePosts();
   });
 });
 
 // ======= AI Panel =======
+document.getElementById('ask-ai-btn')?.addEventListener('click', askAI);
 function askAI() {
   const input = document.getElementById('ai-input').value.trim();
   const output = document.getElementById('ai-output');
   if (!input) return output.textContent = "Please enter a question.";
-  output.innerHTML = `<p>🤖 AI thinking...</p><p><em>(Feature coming soon. Input captured: "${input}")</em></p>`;
-}
-
-function refreshInsights() {
-  const div = document.getElementById('ai-insights');
-  div.innerHTML = "<p>Re-analyzing site behavior... (AI engine placeholder)</p>";
+  output.innerHTML = `🤖 Thinking...<br><em>(Fake AI: "${input}")</em>`;
 }
 
 // ======= Game Logic =======
@@ -288,7 +290,7 @@ function updateGameUI() {
   if (!status) return;
 
   if (gameState.players.length === 1) {
-    status.innerHTML = `Player 1 joined: <strong>${gameState.players[0]}</strong><br>Waiting for Player 2...`;
+    status.innerHTML = `Player 1: <strong>${gameState.players[0]}</strong><br>Waiting for Player 2...`;
   } else if (gameState.players.length === 2) {
     status.innerHTML = `
       Player 1: <strong>${gameState.players[0]}</strong><br>
@@ -307,7 +309,7 @@ function makeMove() {
   updateGameUI();
 }
 
-// ======= Discord Bot Language =======
+// ======= Bot Creator =======
 document.getElementById('run-bot-btn')?.addEventListener('click', () => {
   const code = document.getElementById('bot-code').value.trim();
   const output = document.getElementById('bot-output');
@@ -334,7 +336,7 @@ document.getElementById('run-bot-btn')?.addEventListener('click', () => {
   }
 });
 
-// ======= Admin Dashboard Logic =======
+// ======= Admin Dashboard =======
 function renderAdminDashboard() {
   const adminSection = document.getElementById('tab-admin');
   if (!adminSection) return;
@@ -342,7 +344,6 @@ function renderAdminDashboard() {
   if (currentUser === 'admin') {
     adminSection.style.display = 'block';
 
-    // List Users
     const userList = document.getElementById('admin-user-list');
     userList.innerHTML = '';
     Object.keys(users).forEach(u => {
@@ -351,7 +352,6 @@ function renderAdminDashboard() {
       userList.appendChild(li);
     });
 
-    // List Posts
     const postList = document.getElementById('admin-post-list');
     postList.innerHTML = '';
     posts.forEach(post => {
@@ -385,3 +385,4 @@ function renderUI() {
 
 renderUI();
 renderTrendingPosts();
+renderExplorePosts();
